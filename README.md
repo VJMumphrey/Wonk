@@ -1,5 +1,5 @@
 ﻿## About
-**Wonk is a security tool meant for competition purposes only**.
+***Wonk is a security tool meant for competition purposes only. This is a work in progress and not meant to be ran in a professional setting.***
 
 It reads the event logs among many things and monitors users and their actions.
 If a user does a bad action their session is *"Wonked"*.

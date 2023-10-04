@@ -65,13 +65,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs">
+    <Compile Include="Banner.cs" />
+    <Compile Include="Utils.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="docs\CodeArchitechure.md" />
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>

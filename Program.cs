@@ -99,9 +99,6 @@ namespace Wonk
             return users;
         }
 
-        // url for logman tool
-        // other way to do all of this
-        // https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/logman
         private static async Task<List<int>> EventTracing()
         {
             // setup the providers
@@ -155,7 +152,7 @@ namespace Wonk
                 {
                     // TODO figure out how to fix/cleanup and shutdown on errors
                     // close the session and cleanup
-                    // session.Dispose();
+                    session.Dispose();
                 };
 
                 // start listening for events

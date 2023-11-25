@@ -19,7 +19,7 @@ namespace Wonk
             {
                 IDictionary<string, string> RemoteConnections = GatherConns();
 
-                List<UserProc> usernames = GatherProcs();
+                List<Utils.UserProc> usernames = GatherProcs();
 
                 var eventIDs = await EventTracing();
 
@@ -55,7 +55,7 @@ namespace Wonk
             // strip the port number out of the local endpoint
             foreach (TcpConnectionInformation connection in tcpConnections)
             {
-                if (Enum.TryParse(connection.LocalEndPoint.ToString(), out RemotePorts _))
+                if (Enum.TryParse(connection.LocalEndPoint.ToString(), out Utils.RemotePorts _))
                 {
                     RemoteConnections.Add(connection.LocalEndPoint.ToString(), connection.LocalEndPoint.Port.ToString());
                 }
@@ -68,12 +68,12 @@ namespace Wonk
         }
 
         // gather the processes on the system with the username along with it
-        private static List<UserProc> GatherProcs()
+        private static List<Utils.UserProc> GatherProcs()
         {
             // The call to InvokeMethod below will fail if the Handle property is not retrieved
             string[] propertiesToSelect = new[] { "Handle", "ProcessId" };
             SelectQuery processQuery = new SelectQuery("Win32_Process", "Name = 'taskhost.exe'", propertiesToSelect);
-            List<UserProc> users = new List<UserProc>();
+            List<Utils.UserProc> users = new List<Utils.UserProc>();
 
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(processQuery))
             using (ManagementObjectCollection processes = searcher.Get())
@@ -89,7 +89,7 @@ namespace Wonk
                         uint processId = (uint)process["ProcessId"];
 
                         // set the class objects and store in a list
-                        users.Add(new UserProc(username, processId));
+                        users.Add(new Utils.UserProc(username, processId));
                     }
                     else
                     {
@@ -101,22 +101,7 @@ namespace Wonk
 
         private static async Task<List<int>> EventTracing()
         {
-            // setup the providers
-            List<Tuple<string, int>> providersAndEvents = new List<Tuple<string, int>>
-            {
-                Tuple.Create("Microsoft-Windows-Security-Auditing", 4624),      // successful logins
-                Tuple.Create("Microsoft-Windows-SMBSever", 3000),               // access SMBv1 server
-                Tuple.Create("Microsoft-Windows-WinINet", 0),                   // network traffic
-                Tuple.Create("Microsoft-Windows-DNS-Client", 0),                // dns queries
-                Tuple.Create("Microsoft-Windows-SMBClient", 0),                 // smb info
-                Tuple.Create("Microsoft-Windows-Kernel-Process", 0),            // process info
-                Tuple.Create("Microsoft-Windows-Kernel-File", 0),               // file and directory
-                Tuple.Create("Microsoft-Windows-Kernel-Audit-API-Calls",  0),   // remote process termination
-                Tuple.Create("Microsoft-Windows-PowerShell", 0),                // powerShell
-                Tuple.Create("Microsoft-Windows-WinRM", 0)                      // WinRM
-
-                // add more later
-            };
+            List<Tuple<string, int>> providersAndEvents = Utils.GenProvidersEvents();
 
             var eventIDs = new List<int>();
 
@@ -172,9 +157,9 @@ namespace Wonk
         private static async Task<int> Wonked(List<int> eventIDs, IDictionary<string, string> remote_connections)
         {
             // kill the main process of the users connection
-            List<UserProc> users = GatherProcs();
+            List<Utils.UserProc> users = GatherProcs();
 
-            foreach (UserProc process in users)
+            foreach (Utils.UserProc process in users)
             {
                 process.Kill();
             }

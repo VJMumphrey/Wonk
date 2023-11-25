@@ -1,4 +1,5 @@
-﻿### How to Setup for Development
+﻿How to Setup for Development
+============================
 
 In order to work on Wonk you need to have Visual Studio installed and install all tools needed to develop a C# app for windows.
 
